@@ -306,6 +306,18 @@ app.get('/domain/first-auto-login', (req, res) => {
 	});
 });
 
+// DELETE /domain/first-auto-login - Clear all first auto login domains
+app.delete('/domain/first-auto-login', (req, res) => {
+	const clearedCount = firstAutoLoginDomains.size;
+	firstAutoLoginDomains.clear();
+
+	res.json({
+		success: true,
+		message: `Cleared ${clearedCount} first auto login domains`,
+		clearedCount,
+	});
+});
+
 // Start server
 app.listen(PORT, () => {
 	console.log(`🚀 API Server running on http://localhost:${PORT}`);
@@ -323,5 +335,8 @@ app.listen(PORT, () => {
 	);
 	console.log(
 		'  GET /domain/first-auto-login - Get all first auto login domains'
+	);
+	console.log(
+		'  DELETE /domain/first-auto-login - Clear all first auto login domains'
 	);
 });

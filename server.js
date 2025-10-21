@@ -21,7 +21,7 @@ let users = [
 		password: 'fdf',
 	},
 ];
-
+let recommended = false;
 let credentials = [
 	{
 		id: 'fdcd',
@@ -215,6 +215,18 @@ app.post('/auth/refresh-token', (req, res) => {
 });
 
 // CREDENTIAL ENDPOINTS
+
+app.get('/recommended', (_, res) => {
+	res.json({
+		success: true,
+		recommended,
+	});
+});
+app.post('/recommended', (req, res) => {
+	const { recommended: newRecommended } = req.body;
+	recommended = newRecommended;
+	res.status(201).json({ recommended });
+});
 
 // GET /credential
 app.get('/credential', (req, res) => {

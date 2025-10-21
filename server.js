@@ -274,6 +274,37 @@ app.delete('/credential/:id', (req, res) => {
 	res.json({ success: true, message: 'Credential deleted' });
 });
 
+// DELETE /credential/domain/:domain - Delete all credentials for a specific domain
+app.delete('/credential/domain/:domain', (req, res) => {
+	const { domain } = req.params;
+
+	if (!domain) {
+		return res.status(400).json({
+			success: false,
+			message: 'Domain parameter is required',
+		});
+	}
+
+	// Filter out credentials for the specified domain
+	const initialCount = credentials.length;
+	credentials = credentials.filter((cred) => cred.domain !== domain);
+	const deletedCount = initialCount - credentials.length;
+
+	// Also remove domain from first auto login domains
+	const wasInFirstAutoLogin = firstAutoLoginDomains.has(domain);
+	firstAutoLoginDomains.delete(domain);
+
+	res.json({
+		success: true,
+		message: `Deleted ${deletedCount} credentials for domain: ${domain}${
+			wasInFirstAutoLogin ? ' and removed from first auto login' : ''
+		}`,
+		deletedCount,
+		domain,
+		removedFromFirstAutoLogin: wasInFirstAutoLogin,
+	});
+});
+
 // DOMAIN ENDPOINTS
 
 // POST /domain/first-auto-login - Add domain to first auto login
@@ -335,6 +366,9 @@ app.listen(PORT, () => {
 	console.log('  POST /credential - Create credential');
 	console.log('  PUT /credential/:id - Update credential');
 	console.log('  DELETE /credential/:id - Delete credential');
+	console.log(
+		'  DELETE /credential/domain/:domain - Delete all credentials for domain'
+	);
 	console.log(
 		'  POST /domain/first-auto-login - Add domain to first auto login'
 	);
